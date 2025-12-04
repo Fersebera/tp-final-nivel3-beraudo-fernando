@@ -16,14 +16,10 @@ namespace negocio
             try
             {
                 if (id != "")
-                {
-                    datos.setearConsulta("select A.Id, A.Codigo as Código, A.Nombre, A.Descripcion as Descripción, A.IdMarca, M.Descripcion as Marca, A.IdCategoria, C.Descripcion as Categoría, A.ImagenUrl, A.Precio, A.Activo from ARTICULOS A, MARCAS M, CATEGORIAS C where A.IdMarca = M.Id and A.IdCategoria = C.Id and A.Id = " + id);
-                }
+                    datos.setearConsulta("select A.Id, A.Codigo as Código, A.Nombre, A.Descripcion as Descripción, A.IdMarca, M.Descripcion as Marca, A.IdCategoria, C.Descripcion as Categoría, A.ImagenUrl, A.Precio from ARTICULOS A, MARCAS M, CATEGORIAS C where A.IdMarca = M.Id and A.IdCategoria = C.Id and A.Id = " + id);
                 else
-                {
-                    datos.setearConsulta("select A.Id, A.Codigo as Código, A.Nombre, A.Descripcion as Descripción, A.IdMarca, M.Descripcion as Marca, A.IdCategoria, C.Descripcion as Categoría, A.ImagenUrl, A.Precio, A.Activo from ARTICULOS A, MARCAS M, CATEGORIAS C where A.IdMarca = M.Id and A.IdCategoria = C.Id");
+                    datos.setearConsulta("select A.Id, A.Codigo as Código, A.Nombre, A.Descripcion as Descripción, A.IdMarca, M.Descripcion as Marca, A.IdCategoria, C.Descripcion as Categoría, A.ImagenUrl, A.Precio from ARTICULOS A, MARCAS M, CATEGORIAS C where A.IdMarca = M.Id and A.IdCategoria = C.Id");
 
-                }
                 datos.ejecutarLectura();
 
                 while (datos.Lector.Read())
@@ -45,8 +41,6 @@ namespace negocio
 
                     aux.Precio = (decimal)datos.Lector["Precio"];
 
-                    aux.Activo = bool.Parse(datos.Lector["Activo"].ToString());
-
                     lista.Add(aux);
                 }
                 return lista;
@@ -59,7 +53,7 @@ namespace negocio
             {
                 datos.cerrarConexion();
             }
-        }      
+        }
 
         public void agregar(Articulo nuevo)
         {
@@ -86,7 +80,7 @@ namespace negocio
             {
                 datos.cerrarConexion();
             }
-        }       
+        }
 
         public void editar(Articulo art)
         {
@@ -110,7 +104,7 @@ namespace negocio
             {
                 throw ex;
             }
-        }        
+        }
 
         public void eliminar(int id)
         {
@@ -127,30 +121,30 @@ namespace negocio
             }
         }
 
-        public void eliminarLogico(int id, bool activo = false)
-        {
-            try
-            {
-                AccesoDatos datos = new AccesoDatos();
-                datos.setearConsulta("update ARTICULOS set Activo = @activo where id= @id");
-                datos.setearParametros("@id", id);
-                datos.setearParametros("@activo", activo);
-                datos.ejecutarAccion();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-        }        
+        //public void eliminarLogico(int id, bool activo = false)
+        //{
+        //    try
+        //    {
+        //        AccesoDatos datos = new AccesoDatos();
+        //        datos.setearConsulta("update ARTICULOS set Activo = @activo where id= @id");
+        //        datos.setearParametros("@id", id);
+        //        datos.setearParametros("@activo", activo);
+        //        datos.ejecutarAccion();
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        throw ex;
+        //    }
+        //}
 
-        public List<Articulo> filtrar(string campo, string criterio, string filtro, string estado)
+        public List<Articulo> filtrar(string campo, string criterio, string filtro)
         {
             List<Articulo> lista = new List<Articulo>();
             AccesoDatos datos = new AccesoDatos();
 
             try
             {
-                string consulta = "select A.Id, A.Codigo as Código, A.Nombre, A.Descripcion as Descripción, A.IdMarca, M.Descripcion as Marca, A.IdCategoria, C.Descripcion as Categoría, A.ImagenUrl, A.Precio, A.Activo from ARTICULOS A, MARCAS M, CATEGORIAS C where A.IdMarca = M.Id and A.IdCategoria = C.Id and ";
+                string consulta = "select A.Id, A.Codigo as Código, A.Nombre, A.Descripcion as Descripción, A.IdMarca, M.Descripcion as Marca, A.IdCategoria, C.Descripcion as Categoría, A.ImagenUrl, A.Precio from ARTICULOS A, MARCAS M, CATEGORIAS C where A.IdMarca = M.Id and A.IdCategoria = C.Id and ";
 
                 if (campo == "Precio")
                 {
@@ -196,12 +190,7 @@ namespace negocio
                             consulta += "M.Descripcion like '%" + filtro + "%'";
                             break;
                     }
-                }
-
-                if (estado == "Activo")
-                    consulta += " and A.Activo = 1";
-                else if (estado == "Inactivo")
-                    consulta += " and A.Activo = 0";
+                }               
 
                 datos.setearConsulta(consulta);
                 datos.ejecutarLectura();
@@ -225,8 +214,6 @@ namespace negocio
 
                     aux.Precio = (decimal)datos.Lector["Precio"];
 
-                    aux.Activo = bool.Parse(datos.Lector["Activo"].ToString());
-
                     lista.Add(aux);
                 }
                 return lista;
@@ -236,5 +223,45 @@ namespace negocio
                 throw ex;
             }
         }
+
+        public List<Articulo> ListarFav(string id)
+        {
+            List<Articulo> listaFav = new List<Articulo>();
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {                
+                datos.setearConsulta("select A.Id, A.Codigo as Código, A.Nombre, A.Descripcion as Descripción, A.IdMarca, M.Descripcion as Marca, A.IdCategoria, C.Descripcion as Categoría, A.ImagenUrl, A.Precio, F.Id as IdFav, U.Id as IdUser, U.email from ARTICULOS A, MARCAS M, CATEGORIAS C, FAVORITOS F, USERS U where A.IdMarca = M.Id and A.IdCategoria = C.Id and F.IdArticulo = A.Id and F.IdUser = U.Id and F.IdUser = @idUser");
+                datos.setearParametros("@idUser", id);
+                datos.ejecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    Articulo favorito = new Articulo();
+                    favorito.Id = (int)datos.Lector["Id"];
+                    favorito.Codigo = (string)datos.Lector["Código"];
+                    favorito.Nombre = (string)datos.Lector["Nombre"];
+                    favorito.Descripcion = (string)datos.Lector["Descripción"];
+                    favorito.Brand = new Marca();
+                    favorito.Brand.Id = (int)datos.Lector["IdMarca"];
+                    favorito.Brand.Descripcion = (string)datos.Lector["Marca"];
+                    favorito.Category = new Categoria();
+                    favorito.Category.Id = (int)datos.Lector["IdCategoria"];
+                    favorito.Category.Descripcion = (string)datos.Lector["Categoría"];
+                    if (!(datos.Lector["ImagenUrl"] is DBNull))
+                        favorito.ImagenUrl = (string)datos.Lector["ImagenUrl"];
+                    favorito.Precio = (decimal)datos.Lector["Precio"];
+
+                    listaFav.Add(favorito);
+                }
+                return listaFav;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally { datos.cerrarConexion(); }
+        }
+
     }
 }

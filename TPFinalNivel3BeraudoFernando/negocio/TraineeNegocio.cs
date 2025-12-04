@@ -15,7 +15,7 @@ namespace negocio
 
             try
             {
-                datos.setearProcedimiento("insertarNuevo");
+                datos.setearConsulta("insert into USERS (email, pass, admin) output inserted.id values (@email, @pass, 0)");
                 datos.setearParametros("@email", nuevo.Email);
                 datos.setearParametros("@pass", nuevo.Pass);
                 return datos.ejecutarAccionScalar();
@@ -36,7 +36,7 @@ namespace negocio
 
             try
             {
-                datos.setearConsulta("Select id, email, pass, nombre, apellido, fechaNacimiento, admin, imagenPerfil from USERS where email = @email and pass = @pass");
+                datos.setearConsulta("Select id, email, pass, nombre, apellido, urlImagenPerfil, admin from USERS where email = @email and pass = @pass");
                 datos.setearParametros("@email", trainee.Email);
                 datos.setearParametros("@pass", trainee.Pass);
                 datos.ejecutarLectura();
@@ -47,12 +47,10 @@ namespace negocio
                     trainee.Admin = (bool)datos.Lector["admin"];
                     if (!(datos.Lector["nombre"] is DBNull))
                         trainee.Nombre = (string)datos.Lector["nombre"];
-                    if (!(datos.Lector["Apellido"] is DBNull))
+                    if (!(datos.Lector["apellido"] is DBNull))
                         trainee.Apellido = (string)datos.Lector["apellido"];
-                    if (!(datos.Lector["fechaNacimiento"] is DBNull))
-                        trainee.FechaNacimiento = DateTime.Parse(datos.Lector["fechaNacimiento"].ToString());
-                    if (!(datos.Lector["imagenPerfil"] is DBNull))
-                        trainee.ImagenPerfil = (string)datos.Lector["imagenPerfil"];
+                    if (!(datos.Lector["urlImagenPerfil"] is DBNull))
+                        trainee.ImagenPerfil = (string)datos.Lector["urlImagenPerfil"];
 
                     return true;
                 }
@@ -72,7 +70,7 @@ namespace negocio
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                datos.setearConsulta("Update USERS set imagenPerfil=@imagen, nombre=@nombre, apellido=@apellido, fechaNacimiento=@fecha Where Id=@id");
+                datos.setearConsulta("Update USERS set urlImagenPerfil=@imagen, nombre=@nombre, apellido=@apellido Where Id=@id");
                 //datos.setearParametros("@imagen", user.ImagenPerfil != null ? user.ImagenPerfil : "");
                 datos.setearParametros("@imagen", (object)user.ImagenPerfil ?? DBNull.Value);
                 datos.setearParametros("@id", user.Id);
@@ -80,8 +78,6 @@ namespace negocio
                 datos.setearParametros("@nombre", (object)user.Nombre ?? DBNull.Value);
                 //datos.setearParametros("@apellido", user.Apellido);
                 datos.setearParametros("@apellido", (object)user.Apellido ?? DBNull.Value);
-                //datos.setearParametros("@fecha", user.FechaNacimiento);
-                datos.setearParametros("@fecha", (object)user.FechaNacimiento ?? DBNull.Value);
                 datos.ejecutarAccion();
             }
             catch (Exception ex)
