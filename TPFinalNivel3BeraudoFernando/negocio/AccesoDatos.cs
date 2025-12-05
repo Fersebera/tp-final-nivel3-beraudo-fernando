@@ -4,7 +4,9 @@ using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Configuration;
 using dominio;
+using System.Configuration;
 
 namespace negocio
 {
@@ -20,7 +22,8 @@ namespace negocio
         }
         public AccesoDatos()
         {
-            conexion = new SqlConnection("server=.\\SQLEXPRESS; database=CATALOGO_WEB_DB; integrated security=true");
+            //conexion = new SqlConnection("server=.\\SQLEXPRESS; database=CATALOGO_WEB_DB; integrated security=true");
+            conexion = new SqlConnection(ConfigurationManager.AppSettings["cadenaConexion"]);
             comando = new SqlCommand();
         }
         public void setearConsulta(string consulta)
