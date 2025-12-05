@@ -1,6 +1,22 @@
 ﻿<%@ Page Title="" Language="C#" MasterPageFile="~/Master.Master" AutoEventWireup="true" CodeBehind="Default.aspx.cs" Inherits="App_Web_Catalogo.Default" %>
 
 <asp:Content ID="Content1" ContentPlaceHolderID="head" runat="server">
+    <style>
+        .card-img-container {
+            height: 200px; /* altura uniforme para todas las cards */
+            width: 100%; /* ocupa todo el ancho de la card */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: transparent; /* sin fondo, pero mantiene el espacio */
+        }
+
+        .card-img-container img {
+            max-height: 100%;
+            max-width: 100%;
+            object-fit: contain; /* mantiene proporción sin recortar */
+        }
+    </style>
 </asp:Content>
 <asp:Content ID="Content2" ContentPlaceHolderID="ContentPlaceHolder1" runat="server">
 
@@ -68,9 +84,9 @@
     <div class="row row-cols-1 row-cols-md-3 g-4">
         <asp:Repeater ID="repRepetidor" runat="server">
             <ItemTemplate>
-                <div class="col">
-                    <div class="card">
-                        <img src="<%#Eval("ImagenUrl")%>" class="d-flex justify-content-center align-items-center" alt="foto" style="height: auto; width: 50%">
+                <div class="card h-100">
+                    <div class="card-img-container">
+                        <img src="<%#Eval("ImagenUrl")%>" alt="foto" style="max-height: 100%; max-width: 100%; object-fit: contain;">
                         <div class="card-body">
                             <h5 class="card-title"><%#Eval("Nombre")%></h5>
                             <p class="card-text"><%#Eval("Brand")%></p>
